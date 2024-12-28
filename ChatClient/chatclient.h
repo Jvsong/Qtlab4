@@ -27,4 +27,3 @@ public slots:
 
 #endif // CHATCLIENT_H
 
-//本机ip192.168.199.1
