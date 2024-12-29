@@ -57,7 +57,7 @@ void ChatServer::jsonReceived(ServerWorker *sender, const QJsonObject &docObj)
         message["type"] = "message";
         message["text"] = text;
         message["sender"] = sender->userName();
-        // broadcast(message, sender);
+
     }else if (typeVal.toString().compare("login", Qt::CaseInsensitive) == 0) {
         const QJsonValue usernameVal = docObj.value("text");
         if (usernameVal.isNull() || !usernameVal.isString()) {
@@ -70,10 +70,7 @@ void ChatServer::jsonReceived(ServerWorker *sender, const QJsonObject &docObj)
         connectedMessage["type"] = "newuser";
         connectedMessage["username"] = usernameVal.toString();
 
- //       broadcast(connectedMessage, sender);
     }
-
-
 }
 
 

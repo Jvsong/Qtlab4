@@ -11,22 +11,29 @@ ChatClient::ChatClient(QObject *parent)
     connect(m_clientSocket, &QTcpSocket::connected, this, &ChatClient::connected);
     connect(m_clientSocket, &QTcpSocket::readyRead, this, &ChatClient::onReadyRead);
 
-
 }
 
 void ChatClient::onReadyRead()
 {
-    QByteArray jsonData;
+    QByteArray jsonData;//存放读取到的数据
     QDataStream socketStream(m_clientSocket);
-    socketStream.setVersion(QDataStream::Qt_5_12);
+    socketStream.setVersion(QDataStream::Qt_6_7);
 
-    // Start an infinite loop
-    for (;;) {
-        socketStream.startTransaction();
-        socketStream >> jsonData;
-        if (socketStream.commitTransaction()) {
-            emit messageReceived(QString::fromUtf8(jsonData));
-        } else {
+    for(;;){
+        socketStream.startTransaction();//开始事务读数据
+        socketStream >> jsonData;//从QDataStream中读取数据到jsonData,>>为写入数据
+
+        if(socketStream.commitTransaction()){//事务提交成功
+
+            QJsonParseError parseError;
+            const QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData,&parseError);
+            if(parseError.error == QJsonParseError::NoError){
+                if(jsonDoc.isObject()){
+                    emit jsonReceived(jsonDoc.object());
+                }
+            }
+        }
+        else{
             break;
         }
     }
@@ -55,4 +62,9 @@ void ChatClient::sendMessage(const QString &text, const QString &type)
 void ChatClient::connectToServer(const QHostAddress &address, quint16 port)
 {
     m_clientSocket->connectToHost(address,port);
+}
+
+void ChatClient::disconnectToServer()
+{
+    m_clientSocket->disconnectFromHost();
 }
