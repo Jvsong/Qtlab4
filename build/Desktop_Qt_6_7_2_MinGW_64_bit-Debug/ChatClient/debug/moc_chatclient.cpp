@@ -49,7 +49,7 @@ constexpr auto qt_meta_stringdata_CLASSChatClientENDCLASS = QtMocHelpers::string
     "QHostAddress",
     "address",
     "port",
-    "disconnectToServer"
+    "disconnectFromHost"
 );
 #else  // !QT_MOC_HAS_STRINGDATA
 #error "qtmochelpers.h not found or too old."
@@ -126,7 +126,7 @@ Q_CONSTINIT const QMetaObject ChatClient::staticMetaObject = { {
         QtPrivate::TypeAndForceComplete<void, std::false_type>,
         QtPrivate::TypeAndForceComplete<const QHostAddress &, std::false_type>,
         QtPrivate::TypeAndForceComplete<quint16, std::false_type>,
-        // method 'disconnectToServer'
+        // method 'disconnectFromHost'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -145,7 +145,7 @@ void ChatClient::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, 
         case 4: _t->sendMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<QString>>(_a[2]))); break;
         case 5: _t->sendMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         case 6: _t->connectToServer((*reinterpret_cast< std::add_pointer_t<QHostAddress>>(_a[1])),(*reinterpret_cast< std::add_pointer_t<quint16>>(_a[2]))); break;
-        case 7: _t->disconnectToServer(); break;
+        case 7: _t->disconnectFromHost(); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {

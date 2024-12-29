@@ -38,12 +38,17 @@ void MainWindow::on_sayButton_clicked()
 }
 
 
-void MainWindow::on_logoutButton_clicked()
+void MainWindow::on_logoutButton_clicked()//退出按钮
 {
-    m_chatClient->disconnectToServer();
-    ui->stackedWidget->setCurrentWidget(ui->loginPage);
-}
+    m_chatClient->disconnectFromHost();
+    ui->stackedWidget->setCurrentWidget(ui->loginPage);//跳转到聊天室界面
 
+    for(auto aItem : ui->userListWidget->findItems(ui->usernameEdit->text(), Qt::MatchExactly)){
+        qDebug("remove");
+        ui->userListWidget->removeItemWidget(aItem);
+        delete aItem;//把用户名从列表中删除
+    }
+}
 void MainWindow::connectedToServer()
 {
     ui->stackedWidget->setCurrentWidget(ui->chatPage);
@@ -58,36 +63,63 @@ void MainWindow::messageReceived(const QString &sender,const QString &text)
 void MainWindow::jsonReceived(const QJsonObject &docObj)
 {
     const QJsonValue typeVal = docObj.value("type");
-    if (typeVal.isNull() || !typeVal.isString()) {
+    if (typeVal.isNull() || !typeVal.isString())
         return;
-    }
 
     if (typeVal.toString().compare("message", Qt::CaseInsensitive) == 0) {
         const QJsonValue textVal = docObj.value("text");
         const QJsonValue senderVal = docObj.value("sender");
 
-        if (textVal.isNull() || !textVal.isString()) {
+        if (textVal.isNull() || !textVal.isString())
             return;
-        }
 
-        if (senderVal.isNull() || !senderVal.isString()) {
+        if (senderVal.isNull() || !senderVal.isString())
             return;
-        }
+
         messageReceived(senderVal.toString(),textVal.toString());
 
     }else if (typeVal.toString().compare("newuser", Qt::CaseInsensitive) == 0) {
         const QJsonValue usernameVal = docObj.value("username");
-        if (usernameVal.isNull() || !usernameVal.isString()) {
+        if (usernameVal.isNull() || !usernameVal.isString())
             return;
-        }
+
+        userJoined(usernameVal.toString());
+    }
+    else if (typeVal.toString().compare("userdisconnected", Qt::CaseInsensitive) == 0) {
+        const QJsonValue usernameVal = docObj.value("username");
+        if (usernameVal.isNull() || !usernameVal.isString())
+            return;
+
+        userLeft(usernameVal.toString());
+    }
+    else if (typeVal.toString().compare("userlist", Qt::CaseInsensitive) == 0) {
+        const QJsonValue userlistVal = docObj.value("userlist");
+        if (userlistVal.isNull() || !userlistVal.isArray())
+            return;
+
+        qDebug() << userlistVal.toVariant().toStringList();
+        userListReceived(userlistVal.toVariant().toStringList());
     }
 }
 
 void MainWindow::userJoined(const QString &user)
 {
     ui->userListWidget->addItem(user);
-    // 确保新用户加入时添加到privateTargetComboBox
-    // ui->privateTargetComboBox->addItem(user);
+}
+
+void MainWindow::userLeft(const QString &user)
+{
+    for(auto aItem : ui->userListWidget->findItems(ui->usernameEdit->text(), Qt::MatchExactly)){
+        qDebug("remove");
+        ui->userListWidget->removeItemWidget(aItem);
+        delete aItem;//把用户名从列表中删除
+    }
+}
+
+void MainWindow::userListReceived(const QStringList &list)
+{
+    ui->userListWidget->clear();
+    ui->userListWidget->addItems(list);
 }
 
 

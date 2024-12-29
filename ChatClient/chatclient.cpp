@@ -64,7 +64,7 @@ void ChatClient::connectToServer(const QHostAddress &address, quint16 port)
     m_clientSocket->connectToHost(address,port);
 }
 
-void ChatClient::disconnectToServer()
+void ChatClient::disconnectFromHost()
 {
     m_clientSocket->disconnectFromHost();
 }

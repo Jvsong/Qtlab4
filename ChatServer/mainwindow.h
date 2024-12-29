@@ -22,7 +22,7 @@ private slots:
     void on_startStopButton_clicked();
 
 public slots:
-    void logMessage(const QString & msg);
+    void logMessage(const QString &msg);
 
 private:
     Ui::MainWindow *ui;

@@ -8,7 +8,7 @@ ServerWorker::ServerWorker(QObject *parent)
 {
     m_serverSocket = new QTcpSocket(this);
     connect(m_serverSocket,&QTcpSocket::readyRead,this,&ServerWorker::onReadyRead);
-
+    connect(m_serverSocket,&QTcpSocket::disconnected,this,&ServerWorker::disconnectFromClient);
 }
 
 bool ServerWorker::setSocketDescription(qintptr socketDescriptor)
@@ -26,11 +26,12 @@ void ServerWorker::setUserName(QString user)
     m_username = user;
 }
 
+
 void ServerWorker::onReadyRead()//读取客户端发送的数据
 {
     QByteArray jsonData;//存放读取到的数据
     QDataStream socketStream(m_serverSocket);
-    socketStream.setVersion(QDataStream::Qt_6_7);
+    socketStream.setVersion(QDataStream::Qt_5_12);
 
     for(;;){
         socketStream.startTransaction();//开始事务读数据
@@ -78,7 +79,6 @@ void ServerWorker::sendJson(const QJsonObject &json)
     emit logMessage(QLatin1String("Sending to ") + userName() + QLatin1String("-") + QString::fromUtf8(jsonData));
 
     QDataStream socketStream(m_serverSocket);
-    socketStream.setVersion(QDataStream::Qt_6_2);
+    socketStream.setVersion(QDataStream::Qt_5_7);
     socketStream << jsonData;
 }
-
